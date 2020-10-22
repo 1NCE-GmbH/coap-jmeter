@@ -39,6 +39,7 @@ public class CoAPPubSamplerUI extends AbstractSamplerGui implements CoAPConstant
     private final JLabeledTextField messageId = new JLabeledTextField("Message ID:");
     private final JLabeledTextField token = new JLabeledTextField("Token:");
     private final JLabeledTextField resourcePath = new JLabeledTextField("Resource Path(Topic):");
+    private final JLabeledTextField queryParameter = new JLabeledTextField("Query param:");
 
     private JLabeledChoice payloadTypes;
     private final JSyntaxTextArea sendPayload = JSyntaxTextArea.getInstance(10, 50);
@@ -85,6 +86,7 @@ public class CoAPPubSamplerUI extends AbstractSamplerGui implements CoAPConstant
         
         JPanel optsPanel1 = new HorizontalPanel();
         optsPanel1.add(resourcePath);
+        optsPanel1.add(queryParameter);
         optsPanelCon.add(optsPanel1);
         
         return optsPanelCon;
@@ -159,6 +161,7 @@ public class CoAPPubSamplerUI extends AbstractSamplerGui implements CoAPConstant
         this.messageId.setText(sampler.getMessageId());
         this.token.setText(sampler.getToken());
         this.resourcePath.setText(sampler.getResourcePath());
+        this.queryParameter.setText(sampler.getQueryParam());
         
         this.timestamp.setSelected(sampler.isAddTimestamp());
         if(PAYLOAD_TYPE_STRING.equalsIgnoreCase(sampler.getPayloadType())) {
@@ -189,6 +192,7 @@ public class CoAPPubSamplerUI extends AbstractSamplerGui implements CoAPConstant
         sampler.setMessageId(this.messageId.getText());
         sampler.setToken(this.token.getText());
         sampler.setResourcePath(this.resourcePath.getText());
+        sampler.setQueryParam(this.queryParameter.getText());
         
         sampler.setAddTimestamp(this.timestamp.isSelected());
         sampler.setPayloadType(this.payloadTypes.getText());
@@ -207,6 +211,7 @@ public class CoAPPubSamplerUI extends AbstractSamplerGui implements CoAPConstant
         this.messageId.setText("");
         this.token.setText("");
         this.resourcePath.setText(DEFAULT_RESPURCE_PATH);
+        this.queryParameter.setText(DEFAULT_QUERY_PARAM);
         
         this.timestamp.setSelected(false);      
         this.payloadTypes.setSelectedIndex(2);

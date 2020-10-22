@@ -36,6 +36,7 @@ public class CoAPPubSampler extends AbstractCoAPSampler implements ThreadListene
     private boolean isFirstLoop = true;
     private String uri;
     private String resourcePath;
+    private String queryParam;
     private String encodedResPath;
     private Request request;
     private String query;
@@ -89,7 +90,7 @@ public class CoAPPubSampler extends AbstractCoAPSampler implements ThreadListene
         SampleResult result = new SampleResult();
         //logger.info("Establish a publish sample");
         try {
-            if(isFirstLoop == true) {
+            if(isFirstLoop) {
 /*
                 //String path = System.getProperty("user.dir")+"/coappubclient.log";
                 String hostName = InetAddress.getLocalHost().getHostName();
@@ -115,12 +116,8 @@ public class CoAPPubSampler extends AbstractCoAPSampler implements ThreadListene
             } else {
                 request = Request.newPost();
             }
-            
-            if(DEFAULT_COAP_MESSAGE_TYPE.equals(getMethodType())) {
-                request.setConfirmable(false);
-            } else {
-                request.setConfirmable(true);
-            }
+
+            request.setConfirmable(!DEFAULT_COAP_MESSAGE_TYPE.equals(getMethodType()));
             
             if(!getMessageId().equals("")) {
                 try {
@@ -137,8 +134,9 @@ public class CoAPPubSampler extends AbstractCoAPSampler implements ThreadListene
             request.getOptions().setContentFormat(MediaTypeRegistry.APPLICATION_OCTET_STREAM);
             request.setURI(uri);
             request.getOptions().setUriQuery(query);
-            
+
             resourcePath = getResourcePath();
+            queryParam = getQueryParam();
             
             if(resourcePath.startsWith("/")) {
                 resourcePath = resourcePath.substring("/".length());
@@ -148,8 +146,12 @@ public class CoAPPubSampler extends AbstractCoAPSampler implements ThreadListene
                 request.getOptions().addUriPath("mqtt").addUriPath(resourcePath.substring("mqtt/".length()));
             } else if(resourcePath.startsWith("ps/")) {
                 request.getOptions().addUriPath("ps").addUriPath(resourcePath.substring("ps/".length()));
-            } else {
+            } else if (!resourcePath.trim().isEmpty()){
                 request.getOptions().addUriPath(resourcePath);
+            }
+
+            if (!queryParam.trim().isEmpty()) {
+                request.getOptions().setUriQuery(queryParam);
             }
             
             if (PAYLOAD_TYPE_RANDOM_STR_WITH_FIX_LEN.equals(getPayloadType())) {
@@ -158,7 +160,7 @@ public class CoAPPubSampler extends AbstractCoAPSampler implements ThreadListene
             
             result.setSampleLabel(getName());
 
-            byte[] toSend = new byte[]{};
+            byte[] toSend;
             byte[] tmp = new byte[]{};
 
             if (PAYLOAD_TYPE_HEX_STRING.equals(getPayloadType())) {
